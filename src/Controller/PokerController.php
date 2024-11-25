@@ -15,11 +15,17 @@ class PokerController
         $request = Request::createFromGlobals();
         $age = $request->query->get('age');
 
+        $message = "";
+
         if ($age >= 18) {
-            return new Response('<p>Bienvenue sur le site de Poker en ligne</p>');
+            $message = "Tu peux accéder à la table de Poker";
         } else {
-            return new Response('Dégage morveux');
+            $message = "Tu peux partir";
         }
+
+        return $this->render('poker.html.twig', [
+            'message' => $message
+        ]);
 
     }
 
