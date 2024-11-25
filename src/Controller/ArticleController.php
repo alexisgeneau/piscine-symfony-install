@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ArticleController extends AbstractController
 {
 
-    #[Route('/articles', 'articles_list')]
+    #[Route('/articles_blog', 'articles_list')]
     public function articles()
     {
 
