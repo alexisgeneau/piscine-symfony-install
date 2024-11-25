@@ -18,12 +18,14 @@ class ArticleController extends AbstractController
 				'title' => 'Article 1',
 				'content' => 'Content of article 1',
 				'image' => 'https://static.vecteezy.com/system/resources/thumbnails/012/176/986/small_2x/a-3d-rendering-image-of-grassed-hill-nature-scenery-png.png',
+                'color' => 'blue',
 			],
 			[
 				'id' => 2,
 				'title' => 'Article 2',
 				'content' => 'Content of article 2',
 				'image' => 'https://static.vecteezy.com/system/resources/thumbnails/012/176/986/small_2x/a-3d-rendering-image-of-grassed-hill-nature-scenery-png.png',
+                'color' => 'yellow',
 			],
 			[
 				'id' => 3,
