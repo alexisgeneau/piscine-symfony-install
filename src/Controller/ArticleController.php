@@ -56,14 +56,7 @@ class ArticleController extends AbstractController
 
     }
 
-
-    // je défini une url avec une variable id
-    // ça veut dire que le router matchera toutes les urls
-    // qui ont cette forme "/article/quelqueChose", "/article/23", "article/toto"
     #[Route('/article/{id}', 'article_show')]
-    // je passe en parametre de la méthode une variable qui a le même nom
-    // que la variable de l'url. Et symfony s'occupe du reste : il récupère la valeur
-    // de la variable dans l'url et la stocke dans ma variable $id
     public function showArticle($id)
     {
 
@@ -102,7 +95,6 @@ class ArticleController extends AbstractController
         ];
 
         $articleFound = null;
-
 
         foreach ($articles as $article) {
             if ($article['id'] === (int) $id) {
