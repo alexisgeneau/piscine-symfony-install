@@ -1,16 +1,19 @@
-{% include "partials/_header.html.twig" %}
+{% extends "base.html.twig" %}
+
+{% block metatitle %}
+    Liste des articles | Le blog de la piscine
+{% endblock metatitle %}
 
 
-<section class="articles-container">
+{% block main %}
+    <section class="articles-container">
 
-    {% for article in articles %}
-        <article class="article-container" >
-            <h2>{{ article.title }}</h2>
-            <a href="{{ path('article_show', {id: article.id}) }}">Voir l'article</a>
-        </article>
-    {% endfor %}
+        {% for article in articles %}
+            <article class="article-container" >
+                <h2>{{ article.title }}</h2>
+                <a href="{{ path('article_show', {id: article.id}) }}">Voir l'article</a>
+            </article>
+        {% endfor %}
 
-</section>
-
-
-{% include "partials/_footer.html.twig" %}
+    </section>
+{% endblock main %}
