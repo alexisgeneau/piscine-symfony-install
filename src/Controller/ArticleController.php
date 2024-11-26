@@ -57,16 +57,15 @@ class ArticleController extends AbstractController
     }
 
 
-    #[Route('/article', 'article_show')]
-    public function showArticle()
+    // je défini une url avec une variable id
+    // ça veut dire que le router matchera toutes les urls
+    // qui ont cette forme "/article/quelqueChose", "/article/23", "article/toto"
+    #[Route('/article/{id}', 'article_show')]
+    // je passe en parametre de la méthode une variable qui a le même nom
+    // que la variable de l'url. Et symfony s'occupe du reste : il récupère la valeur
+    // de la variable dans l'url et la stocke dans ma variable $id
+    public function showArticle($id)
     {
-        // j'utilise une instance de la classe Request
-        // de Symfony, créée avec la méthode statique "createFromGlobals"
-        // cette classe me permet de récupérer n'importe quelle donnée
-        // de la requête HTTP
-        $request = Request::createFromGlobals();
-        // je récupère la donnée GET "id"
-        $id = $request->query->get('id');
 
         $articles = [
             [
@@ -102,27 +101,15 @@ class ArticleController extends AbstractController
 
         ];
 
-
-        // je créé une variable pour contenir mon article trouvé
-        // pour l'instant à null
         $articleFound = null;
 
-        // pour chaque article de la liste
-        // je check si son id correspond à l'id récupéré dans l'url
-        // si c'est le cas, je le stocke dans ma variable
+
         foreach ($articles as $article) {
             if ($article['id'] === (int) $id) {
                 $articleFound = $article;
             }
         }
 
-
-        // je créé une réponse HTTP contenant le HTML
-        // issu de mon fichier twig
-        // pour ça j'utilise la méthode render de l'abstract controller
-        // qui prend en premier parametre le fichier twig (dans le dossier templates)
-        // et en deuxième un tableau contenant
-        // les variables utilisables dans twig
         return $this->render('article_show.html.twig', [
           'article' => $articleFound
         ]);
