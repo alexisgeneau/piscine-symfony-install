@@ -4,13 +4,14 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
 
     #[Route('/articles', 'articles_list')]
-    public function articles()
+    public function articles(): Response
     {
 
 		$articles = [
@@ -56,8 +57,8 @@ class ArticleController extends AbstractController
 
     }
 
-    #[Route('/article/{id}', 'article_show')]
-    public function showArticle($id)
+    #[Route('/article/{id}', 'article_show', ['id' => '\d+'])]
+    public function showArticle(int $id): Response
     {
 
         $articles = [
@@ -102,7 +103,7 @@ class ArticleController extends AbstractController
         $articleFound = null;
 
         foreach ($articles as $article) {
-            if ($article['id'] === (int) $id) {
+            if ($article['id'] === $id) {
                 $articleFound = $article;
             }
         }
@@ -115,15 +116,7 @@ class ArticleController extends AbstractController
 
 
     #[Route('/articles/search-results', 'article_search_results')]
-    // plutôt d'instancier la classe Request manuellement
-    // je peux utiliser le système d'instanciation automatiquement
-    // de symfony
-    // pour ça, je lui passe en parametre de méthode
-    // le type de la classe voulue, suivie d'une variable
-    // dans laquelle je veux que symfony stocke l'instance de la classe
-    // ce mécanisme est appelé autowire
-    public function articleSearchResults(Request $request) {
-
+    public function articleSearchResults(Request $request): Response {
         $search = $request->query->get('search');
 
         return $this->render('article_search_results.html.twig', [
