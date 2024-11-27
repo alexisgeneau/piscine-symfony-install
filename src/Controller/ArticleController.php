@@ -60,7 +60,7 @@ class ArticleController extends AbstractController
     #[Route('/article/{id}', 'article_show', ['id' => '\d+'])]
     public function showArticle(int $id): Response
     {
-
+        
         $articles = [
             [
                 'id' => 1,
@@ -108,6 +108,13 @@ class ArticleController extends AbstractController
             }
         }
 
+
+        if (!$articleFound) {
+            return $this->redirectToRoute('not_found');
+        }
+
+
+
         return $this->render('article_show.html.twig', [
           'article' => $articleFound
         ]);
@@ -118,6 +125,7 @@ class ArticleController extends AbstractController
     #[Route('/articles/search-results', 'article_search_results')]
     public function articleSearchResults(Request $request): Response {
         $search = $request->query->get('search');
+
 
         return $this->render('article_search_results.html.twig', [
             'search' => $search
