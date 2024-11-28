@@ -26,7 +26,6 @@ class Article
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
-
     public function getId(): ?int
     {
         return $this->id;

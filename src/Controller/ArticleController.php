@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
 use App\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +48,42 @@ class ArticleController extends AbstractController
             'search' => $search
         ]);
 
+    }
+
+
+    #[Route('/article/create', 'create_article')]
+    public function createArticle(EntityManagerInterface $entityManager): Response {
+
+        // je créé une instance de l'entité Article
+        // car c'est elle qui représente les articles dans mon application
+        $article = new Article();
+        // j'utilise les méthodes set pour remplir
+        // les propriétés de mon article
+        $article->setTitle('Article 5');
+        $article->setContent('Contenu article 5');
+        $article->setImage("https://cdn.futura-sciences.com/sources/images/AI-creation.jpg");
+        $article->setCreatedAt(new \DateTime());
+
+        // à ce moment, la variable $article
+        // contient une instance de la classe Article avec
+        // les données voulues(sauf l'id car il sera généré par la BDD)
+
+        // j'utilise l'instance de la classe
+        // EntityManager. C'est cette classe qui me permet de sauver / supprimer
+        // des entités en BDD
+        // L'entity manager et Doctrine savent que l'entité correspond à la table article
+        // et que la propriété title correspond à la colonne title grâce aux annotations
+        // donc L'entity manager sait comment faire correspondre mon instance d'entité à un
+        // enregistrement dans la table
+        $entityManager->persist($article);
+
+        // persist permet de pre-sauvegarder mes entités
+        // flush execute la requête SQL dans ma BDD
+        // pour créer un enregistrement d'article dans la table
+        $entityManager->flush();
+
+
+        return new Response('OK');
     }
 
 }
