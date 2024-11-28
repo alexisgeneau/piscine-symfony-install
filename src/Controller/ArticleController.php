@@ -68,20 +68,42 @@ class ArticleController extends AbstractController
     #[Route('/article/delete/{id}', 'delete_article',  ['id' => '\d+'])]
     public function removeArticle(int $id, EntityManagerInterface $entityManager, ArticleRepository $articleRepository): Response {
 
-        // je récupère l'article que je veux supprimer
-        // le repository fait la requête SQL et reconstruit une instance de la classe Article
-        // je dois récupérer une instance de classe car pour la suppression Doctrine a besoin d'une instance de classe
         $article = $articleRepository->find($id);
 
         if (!$article) {
             return $this->redirectToRoute('not_found');
         }
 
-        // j'utilise la méthode remove de l'entity manager pour supprimer l'article
         $entityManager->remove($article);
         $entityManager->flush();
 
-        return new Response('suppr');
+        return $this->render('article_delete.html.twig', [
+            'article' => $article
+        ]);
+    }
+
+    #[Route('/article/update/{id}', 'update_article',  ['id' => '\d+'])]
+    public function updateArticle(int $id, ArticleRepository $articleRepository, EntityManagerInterface $entityManager)
+    {
+        // je récupère mon article en BDD correspondant à l'id dans l'url
+        // doctrine me renvoie une instance de l'entité Article
+        // avec les valeurs des colonnes en propriété de mon instance
+        $article = $articleRepository->find($id);
+
+        // je modifie les valeurs des propriétés de l'instance (title, content...)
+        $article->setTitle('Article 5 MAJ');
+        $article->setContent('Contenu article 5 MAJ');
+
+        // je re-enregistre l'article en BDD
+        // vu que l'entité à déjà une propriété id avec une valeur
+        // doctrine va mettre à jour l'enregistrement de l'article en BDD
+        // et non créer un nouvel article
+        $entityManager->persist($article);
+        $entityManager->flush();
+
+        return $this->render('article_update.html.twig', [
+            'article' => $article
+        ]);
     }
 
 }

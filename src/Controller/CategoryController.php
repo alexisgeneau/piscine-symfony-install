@@ -50,4 +50,20 @@ class CategoryController extends AbstractController
 
     }
 
+
+    #[Route('/category/delete/{id}', 'delete_category', ['id' => '\d+'])]
+    public function removeCategory(int $id, CategoryRepository $categoryRepository, EntityManagerInterface $entityManager): Response
+    {
+        $category = $categoryRepository->find($id);
+
+        $entityManager->remove($category);
+        $entityManager->flush();
+
+        return $this->render('category_delete.html.twig', [
+            'category' => $category
+        ]);
+
+
+    }
+
 }
