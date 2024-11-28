@@ -38,7 +38,6 @@ class ArticleController extends AbstractController
 
     }
 
-
     #[Route('/articles/search-results', 'article_search_results')]
     public function articleSearchResults(Request $request): Response {
         $search = $request->query->get('search');
@@ -50,40 +49,39 @@ class ArticleController extends AbstractController
 
     }
 
-
     #[Route('/article/create', 'create_article')]
     public function createArticle(EntityManagerInterface $entityManager): Response {
-
-        // je créé une instance de l'entité Article
-        // car c'est elle qui représente les articles dans mon application
         $article = new Article();
-        // j'utilise les méthodes set pour remplir
-        // les propriétés de mon article
+
         $article->setTitle('Article 5');
         $article->setContent('Contenu article 5');
         $article->setImage("https://cdn.futura-sciences.com/sources/images/AI-creation.jpg");
         $article->setCreatedAt(new \DateTime());
 
-        // à ce moment, la variable $article
-        // contient une instance de la classe Article avec
-        // les données voulues(sauf l'id car il sera généré par la BDD)
-
-        // j'utilise l'instance de la classe
-        // EntityManager. C'est cette classe qui me permet de sauver / supprimer
-        // des entités en BDD
-        // L'entity manager et Doctrine savent que l'entité correspond à la table article
-        // et que la propriété title correspond à la colonne title grâce aux annotations
-        // donc L'entity manager sait comment faire correspondre mon instance d'entité à un
-        // enregistrement dans la table
         $entityManager->persist($article);
-
-        // persist permet de pre-sauvegarder mes entités
-        // flush execute la requête SQL dans ma BDD
-        // pour créer un enregistrement d'article dans la table
         $entityManager->flush();
 
-
         return new Response('OK');
+    }
+
+
+    #[Route('/article/delete/{id}', 'delete_article',  ['id' => '\d+'])]
+    public function removeArticle(int $id, EntityManagerInterface $entityManager, ArticleRepository $articleRepository): Response {
+
+        // je récupère l'article que je veux supprimer
+        // le repository fait la requête SQL et reconstruit une instance de la classe Article
+        // je dois récupérer une instance de classe car pour la suppression Doctrine a besoin d'une instance de classe
+        $article = $articleRepository->find($id);
+
+        if (!$article) {
+            return $this->redirectToRoute('not_found');
+        }
+
+        // j'utilise la méthode remove de l'entity manager pour supprimer l'article
+        $entityManager->remove($article);
+        $entityManager->flush();
+
+        return new Response('suppr');
     }
 
 }
