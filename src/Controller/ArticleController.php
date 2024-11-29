@@ -57,6 +57,24 @@ class ArticleController extends AbstractController
 
         $form = $this->createForm(ArticleType::class, $article);
 
+        // je demande au formulaire de symfony
+        // de récupérer les données de la requête
+        // et de remplir automatiquement l'entité $article avec
+        // donc de récupérer les données de chaque input
+        // et de les stocker dans les propriétés de l'entité (setTitle() etc)
+        $form->handleRequest($request);
+
+        // je vérifie que les données ont été envoyées
+        if ($form->isSubmitted()) {
+            // je mets automatiquement la date de création de mon article
+            // car je ne veux pas que ce soit choisi par l'utilisateur
+            $article->setCreatedAt(new \DateTime());
+
+            // j'enregistre l'entité article dans ma bdd
+            $entityManager->persist($article);
+            $entityManager->flush();
+        }
+
         $formView = $form->createView();
 
         return $this->render('article_create.html.twig', [
