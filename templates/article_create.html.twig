@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block metatitle %}
+    Création d'un article | Le blog de la piscine
+{% endblock %}
+
+{% block main %}
+
+    <p>{{ message }}</p>
+
+    <form method="post" action="{{ path('create_article') }}">
+
+        <label>Titre
+            <input name="title" type="text" required/>
+        </label>
+
+        <label>Contenu
+            <textarea name="content" required></textarea>
+        </label>
+
+        <label>Image
+            <input name="image" type="text" />
+        </label>
+
+        <input type="submit">
+
+
+    </form>
+
+{% endblock %}
+
+
+

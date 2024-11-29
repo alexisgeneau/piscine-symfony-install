@@ -50,18 +50,34 @@ class ArticleController extends AbstractController
     }
 
     #[Route('/article/create', 'create_article')]
-    public function createArticle(EntityManagerInterface $entityManager): Response {
-        $article = new Article();
+    public function createArticle(EntityManagerInterface $entityManager, Request $request): Response {
 
-        $article->setTitle('Article 5');
-        $article->setContent('Contenu article 5');
-        $article->setImage("https://cdn.futura-sciences.com/sources/images/AI-creation.jpg");
-        $article->setCreatedAt(new \DateTime());
 
-        $entityManager->persist($article);
-        $entityManager->flush();
+        $message = "Veuillez remplir les champs";
 
-        return new Response('OK');
+        if ($request->isMethod('POST')) {
+            $title = $request->request->get('title');
+            $content = $request->request->get('content');
+            $image = $request->request->get('image');
+
+            $article = new Article();
+
+            $article->setTitle($title);
+            $article->setContent($content);
+            $article->setImage($image);
+
+            $article->setCreatedAt(new \DateTime());
+
+            $entityManager->persist($article);
+            $entityManager->flush();
+
+
+            $message = "L'article '" . $article->getTitle() . "' a bien été créé";
+        }
+
+        return $this->render('article_create.html.twig', [
+            'message' => $message
+        ]);
     }
 
 
@@ -91,7 +107,7 @@ class ArticleController extends AbstractController
         $article = $articleRepository->find($id);
 
         // je modifie les valeurs des propriétés de l'instance (title, content...)
-        $article->setTitle('Article 5 MAJ');
+        $article->setTitle($article.getId() . 'test');
         $article->setContent('Contenu article 5 MAJ');
 
         // je re-enregistre l'article en BDD
