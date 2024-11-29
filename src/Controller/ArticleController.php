@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,31 +53,22 @@ class ArticleController extends AbstractController
     #[Route('/article/create', 'create_article')]
     public function createArticle(EntityManagerInterface $entityManager, Request $request): Response {
 
+        // je veux créer un nouvel article, donc j'instancie mon entité Article
+        $article = new Article();
 
-        $message = "Veuillez remplir les champs";
+        // j'utilise la méthode createForm d'AbstractController
+        // pour générer un formulaire pour le nouvel article
+        // en passant en parametre le chemin de la classe de Gabarit
+        // de formulaire pour Article (ArticleType, généré avec make:form)
+        // et en second parametre l'instance d'article liée au formulaire
+        $form = $this->createForm(ArticleType::class, $article);
+        // je généère une view pour ce formulaire
+        // pour pouvoir l'utiliser dans twig
+        $formView = $form->createView();
 
-        if ($request->isMethod('POST')) {
-            $title = $request->request->get('title');
-            $content = $request->request->get('content');
-            $image = $request->request->get('image');
-
-            $article = new Article();
-
-            $article->setTitle($title);
-            $article->setContent($content);
-            $article->setImage($image);
-
-            $article->setCreatedAt(new \DateTime());
-
-            $entityManager->persist($article);
-            $entityManager->flush();
-
-
-            $message = "L'article '" . $article->getTitle() . "' a bien été créé";
-        }
 
         return $this->render('article_create.html.twig', [
-            'message' => $message
+            'formView' => $formView
         ]);
     }
 
@@ -101,40 +93,26 @@ class ArticleController extends AbstractController
     #[Route('/article/update/{id}', 'update_article',  ['id' => '\d+'])]
     public function updateArticle(int $id, ArticleRepository $articleRepository, EntityManagerInterface $entityManager, Request $request)
     {
-        // je récupère en BDD l'article lié à l'id de l'url
-        // Doctrine (ORM) me créé une instance de l'entité Article
-        // et la remplie avec les données de l'article en BDD
         $article = $articleRepository->find($id);
 
         $message = "Veuillez remplir les champs";
 
-
-        // si c'est une requête POST
         if ($request->isMethod('POST')) {
 
-            // je récupère la valeur des champs
-            // s'ils ont pas été modifié, je récupère la même
-            // valeur que celle de la BDD (car les champs sont pré-remplis
-            // avec la valeur de BDD)
             $title = $request->request->get('title');
             $content = $request->request->get('content');
             $image = $request->request->get('image');
 
-            // je modifie les valeurs de mon entité avec celles des champs
             $article->setTitle($title);
             $article->setContent($content);
             $article->setImage($image);
 
-            // je mets à jour l'article en BDD
             $entityManager->persist($article);
             $entityManager->flush();
 
             $message = "L'article '" . $article->getTitle() . "' a bien été mis à jour";
         }
 
-        // j'envoie au formulaire twig
-        // l'article existant en BDD
-        // pour pre-remplir les champs
         return $this->render('article_update.html.twig', [
             'article' => $article,
             'message' => $message
