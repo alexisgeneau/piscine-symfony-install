@@ -99,26 +99,45 @@ class ArticleController extends AbstractController
     }
 
     #[Route('/article/update/{id}', 'update_article',  ['id' => '\d+'])]
-    public function updateArticle(int $id, ArticleRepository $articleRepository, EntityManagerInterface $entityManager)
+    public function updateArticle(int $id, ArticleRepository $articleRepository, EntityManagerInterface $entityManager, Request $request)
     {
-        // je récupère mon article en BDD correspondant à l'id dans l'url
-        // doctrine me renvoie une instance de l'entité Article
-        // avec les valeurs des colonnes en propriété de mon instance
+        // je récupère en BDD l'article lié à l'id de l'url
+        // Doctrine (ORM) me créé une instance de l'entité Article
+        // et la remplie avec les données de l'article en BDD
         $article = $articleRepository->find($id);
 
-        // je modifie les valeurs des propriétés de l'instance (title, content...)
-        $article->setTitle($article.getId() . 'test');
-        $article->setContent('Contenu article 5 MAJ');
+        $message = "Veuillez remplir les champs";
 
-        // je re-enregistre l'article en BDD
-        // vu que l'entité à déjà une propriété id avec une valeur
-        // doctrine va mettre à jour l'enregistrement de l'article en BDD
-        // et non créer un nouvel article
-        $entityManager->persist($article);
-        $entityManager->flush();
 
+        // si c'est une requête POST
+        if ($request->isMethod('POST')) {
+
+            // je récupère la valeur des champs
+            // s'ils ont pas été modifié, je récupère la même
+            // valeur que celle de la BDD (car les champs sont pré-remplis
+            // avec la valeur de BDD)
+            $title = $request->request->get('title');
+            $content = $request->request->get('content');
+            $image = $request->request->get('image');
+
+            // je modifie les valeurs de mon entité avec celles des champs
+            $article->setTitle($title);
+            $article->setContent($content);
+            $article->setImage($image);
+
+            // je mets à jour l'article en BDD
+            $entityManager->persist($article);
+            $entityManager->flush();
+
+            $message = "L'article '" . $article->getTitle() . "' a bien été mis à jour";
+        }
+
+        // j'envoie au formulaire twig
+        // l'article existant en BDD
+        // pour pre-remplir les champs
         return $this->render('article_update.html.twig', [
-            'article' => $article
+            'article' => $article,
+            'message' => $message
         ]);
     }
 
