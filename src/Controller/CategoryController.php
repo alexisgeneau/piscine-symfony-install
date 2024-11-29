@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,26 +39,21 @@ class CategoryController extends AbstractController
     #[Route('/category/create', 'create_category', [], ['GET', 'POST'])]
     public function createCategory(EntityManagerInterface $entityManager, Request $request) {
 
-        $message = "Merci de remplir les champs";
+        $category = new Category();
 
-        if ($request->isMethod('POST')) {
+        $formCategory = $this->createForm(CategoryType::class, $category);
 
-            $titleFromUser = $request->request->get('title');
-            $colorFromUser = $request->request->get('color');
+        $formCategory->handleRequest($request);
 
-            $category = new Category();
-            $category->setTitle($titleFromUser);
-
-            $category->setColor($colorFromUser);
-
+        if ($formCategory->isSubmitted()) {
             $entityManager->persist($category);
             $entityManager->flush();
-
-            $message = "Categorie '" . $category->getTitle() . "' créée";
         }
 
+        $formCategoryView = $formCategory->createView();
+
         return $this->render('category_create.html.twig', [
-            'message' => $message
+            'formCategoryView' => $formCategoryView
         ]);
 
     }
@@ -75,6 +71,28 @@ class CategoryController extends AbstractController
             'category' => $category
         ]);
 
+
+    }
+
+    #[Route('/category/update/{id}', 'update_category', ['id' => '\d+'], ['GET', 'POST'])]
+    public function updateCategory(int $id, EntityManagerInterface $entityManager, Request $request, CategoryRepository $categoryRepository) {
+
+        $category = $categoryRepository->find($id);
+
+        $formCategory = $this->createForm(CategoryType::class, $category);
+
+        $formCategory->handleRequest($request);
+
+        if ($formCategory->isSubmitted()) {
+            $entityManager->persist($category);
+            $entityManager->flush();
+        }
+
+        $formCategoryView = $formCategory->createView();
+
+        return $this->render('category_update.html.twig', [
+            'formCategoryView' => $formCategoryView
+        ]);
 
     }
 
