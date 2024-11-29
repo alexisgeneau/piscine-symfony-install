@@ -53,19 +53,11 @@ class ArticleController extends AbstractController
     #[Route('/article/create', 'create_article')]
     public function createArticle(EntityManagerInterface $entityManager, Request $request): Response {
 
-        // je veux créer un nouvel article, donc j'instancie mon entité Article
         $article = new Article();
 
-        // j'utilise la méthode createForm d'AbstractController
-        // pour générer un formulaire pour le nouvel article
-        // en passant en parametre le chemin de la classe de Gabarit
-        // de formulaire pour Article (ArticleType, généré avec make:form)
-        // et en second parametre l'instance d'article liée au formulaire
         $form = $this->createForm(ArticleType::class, $article);
-        // je généère une view pour ce formulaire
-        // pour pouvoir l'utiliser dans twig
-        $formView = $form->createView();
 
+        $formView = $form->createView();
 
         return $this->render('article_create.html.twig', [
             'formView' => $formView
