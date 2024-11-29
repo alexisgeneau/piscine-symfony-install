@@ -7,7 +7,21 @@
 
 {% block main %}
 
-    <h2>Vous avez bien créé la catégorie {{ category.title }}</h2>
+    <p>{{ message }}</p>
+
+    <form method="post" action="{{ path('create_category') }}">
+
+        <label>Titre
+            <input name="title" type="text" required/>
+        </label>
+
+        <label>Couleur
+            <input type="color" name="color">
+        </label>
+
+        <input type="submit">
+
+    </form>
 
 
 {% endblock main %}

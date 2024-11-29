@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -34,18 +35,29 @@ class CategoryController extends AbstractController
     }
 
 
-    #[Route('/category/create', 'create_category')]
-    public function createCategory(EntityManagerInterface $entityManager) {
-        $category = new Category();
-        $category->setTitle('International');
+    #[Route('/category/create', 'create_category', [], ['GET', 'POST'])]
+    public function createCategory(EntityManagerInterface $entityManager, Request $request) {
 
-        $category->setColor('red');
+        $message = "Merci de remplir les champs";
 
-        $entityManager->persist($category);
-        $entityManager->flush();
+        if ($request->isMethod('POST')) {
+
+            $titleFromUser = $request->request->get('title');
+            $colorFromUser = $request->request->get('color');
+
+            $category = new Category();
+            $category->setTitle($titleFromUser);
+
+            $category->setColor($colorFromUser);
+
+            $entityManager->persist($category);
+            $entityManager->flush();
+
+            $message = "Categorie '" . $category->getTitle() . "' créée";
+        }
 
         return $this->render('category_create.html.twig', [
-            'category' => $category
+            'message' => $message
         ]);
 
     }
