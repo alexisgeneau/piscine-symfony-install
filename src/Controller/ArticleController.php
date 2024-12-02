@@ -40,12 +40,14 @@ class ArticleController extends AbstractController
     }
 
     #[Route('/articles/search-results', 'article_search_results')]
-    public function articleSearchResults(Request $request): Response {
+    public function articleSearchResults(Request $request, ArticleRepository $articleRepository): Response {
         $search = $request->query->get('search');
 
+        $articles = $articleRepository->search($search);
 
         return $this->render('article_search_results.html.twig', [
-            'search' => $search
+            'search' => $search,
+            'articles' => $articles,
         ]);
 
     }
