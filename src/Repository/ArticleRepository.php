@@ -17,12 +17,13 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     // fonction de recherche
-    public function search(string $search)
+    public function search(string $search): array
     {
         return $this->createQueryBuilder('a')
             ->where('a.title LIKE :search')
             ->orWhere('a.content LIKE :search')
             ->setParameter('search', '%' . $search . '%')
+            ->orderBy('a.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
 

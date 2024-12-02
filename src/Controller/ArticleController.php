@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,18 +40,6 @@ class ArticleController extends AbstractController
 
     }
 
-    #[Route('/articles/search-results', 'article_search_results')]
-    public function articleSearchResults(Request $request, ArticleRepository $articleRepository): Response {
-        $search = $request->query->get('search');
-
-        $articles = $articleRepository->search($search);
-
-        return $this->render('article_search_results.html.twig', [
-            'search' => $search,
-            'articles' => $articles,
-        ]);
-
-    }
 
     #[Route('/article/create', 'create_article')]
     public function createArticle(EntityManagerInterface $entityManager, Request $request): Response {

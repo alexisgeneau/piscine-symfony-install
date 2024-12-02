@@ -29,9 +29,11 @@ class CategoryController extends AbstractController
     public function showCategory(int $id, CategoryRepository $categoryRepository): Response
     {
         $category = $categoryRepository->find($id);
+        $articles = $category->getArticles();
 
         return $this->render('category_show.html.twig', [
-            'category' => $category
+            'category' => $category,
+            'articles' => $articles,
         ]);
     }
 

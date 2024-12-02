@@ -14,10 +14,20 @@ class CategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title')
-            ->add('color', ColorType::class)
-            ->add('enregistrer', SubmitType::class)
-        ;
+            ->add('title', null, [
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Titre de la catégorie',
+                'label_attr' => ['class' => 'form-label'],
+            ])
+            ->add('color', ColorType::class, [
+                'attr' => ['class' => 'form-control form-control-color'],
+                'label' => 'Couleur',
+                'label_attr' => ['class' => 'form-label'],
+            ])
+            ->add('enregistrer', SubmitType::class, [
+                'attr' => ['class' => 'btn btn-success mt-3'],
+                'label' => 'Enregistrer',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
