@@ -17,4 +17,28 @@
             </div>
         </div>
     </section>
+
+    <section class="container my-5">
+        <h2 class="mb-4">Commentaires ({{ comments|length }})</h2>
+        <div class="">
+            <div class="card shadow-sm p-4">
+                {{ form_start(formView, {'attr': {'class': 'needs-validation'}, 'action': path('comment_create', {id: article.id})}) }}
+
+                {{ form_widget(formView, {'attr': {'class': 'form-control'}}) }}
+
+                {{ form_end(formView) }}
+            </div>
+        </div>
+        {% if comments is not empty %}
+            <div class="list-group">
+                {% for comment in comments %}
+                    <div class="list-group-item list-group-item-action">
+                        <p class="mb-1">{{ comment.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">Aucun commentaire pour cet article.</p>
+        {% endif %}
+    </section>
 {% endblock main %}

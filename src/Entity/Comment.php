@@ -24,4 +24,28 @@ class Comment
     {
         return $this->id;
     }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getArticle(): Article
+    {
+        return $this->article;
+    }
+
+    public function setArticle(Article $article): static
+    {
+        $this->article = $article;
+
+        return $this;
+    }
 }

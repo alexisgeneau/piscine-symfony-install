@@ -2,84 +2,41 @@
 
 namespace App\Controller;
 
-use App\Entity\Article;
 use App\Entity\Comment;
 use App\Form\ArticleType;
 use App\Form\CommentType;
 use App\Repository\ArticleRepository;
-use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ArticleController extends AbstractController
+class CommentController extends AbstractController
 {
-    #[Route('/articles', 'articles_list')]
-    public function articles(ArticleRepository $articleRepository): Response
+    #[Route('/comment/article/{id}/create', 'comment_create')]
+    public function create(int $id, ArticleRepository $articleRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
-        $articles = $articleRepository->findAll();
 
-        return $this->render('articles_list.html.twig', [
-            'articles' => $articles
-        ]);
-
-    }
-
-    #[Route('/article/{id}', 'article_show', ['id' => '\d+'])]
-    public function showArticle(int $id, ArticleRepository $articleRepository): Response
-    {
         $articleFound = $articleRepository->find($id);
 
         if (!$articleFound) {
             return $this->redirectToRoute('not_found');
         }
 
-        $form = $this->createForm(CommentType::class);
+        $comment = new Comment();
+        $comment->setArticle($articleFound);
 
-        $formView = $form->createView();
+        $form = $this->createForm(CommentType::class, $comment);
 
-        $comments = array_reverse($articleFound->getComments()->toArray());
-
-        return $this->render('article_show.html.twig', [
-          'article' => $articleFound,
-          'formView' => $formView,
-          'comments' => $comments,
-        ]);
-    }
-
-
-    #[Route('/article/create', 'create_article')]
-    public function createArticle(EntityManagerInterface $entityManager, Request $request): Response {
-
-        $article = new Article();
-
-        $form = $this->createForm(ArticleType::class, $article);
-
-        // je demande au formulaire de symfony
-        // de récupérer les données de la requête
-        // et de remplir automatiquement l'entité $article avec
-        // donc de récupérer les données de chaque input
-        // et de les stocker dans les propriétés de l'entité (setTitle() etc)
         $form->handleRequest($request);
 
-        // je vérifie que les données ont été envoyées
         if ($form->isSubmitted()) {
-            // je mets automatiquement la date de création de mon article
-            // car je ne veux pas que ce soit choisi par l'utilisateur
-            $article->setCreatedAt(new \DateTime());
-
-            // j'enregistre l'entité article dans ma bdd
-            $entityManager->persist($article);
+            $entityManager->persist($comment);
             $entityManager->flush();
         }
 
-        $formView = $form->createView();
-
-        return $this->render('article_create.html.twig', [
-            'formView' => $formView
-        ]);
+        return $this->redirectToRoute('article_show', ['id' => $comment->getArticle()->getId()]);
     }
 
 

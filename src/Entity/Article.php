@@ -142,4 +142,9 @@ class Article
         return $this;
     }
 
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
 }
